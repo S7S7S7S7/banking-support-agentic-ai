@@ -1,0 +1,5 @@
+﻿txn_id,customer_id,module,txn_type,status,error_code,amount
+TXN101,C001,Collection,EMI,FAILED,E101,5000
+TXN102,C002,Receivable,Payment,SUCCESS,,12000
+TXN103,C003,Collection,EMI,FAILED,E101,5000
+TXN104,C004,Collection,EMI,FAILED,E205,5000

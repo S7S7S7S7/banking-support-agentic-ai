@@ -1,0 +1,29 @@
+# Core
+python-dotenv
+pandas
+numpy
+
+# Database & Banking Systems
+sqlalchemy
+cx_Oracle
+psycopg2-binary
+
+# Agentic AI / Reasoning
+langchain
+transformers
+sentence-transformers
+
+# Rule-based & Automation
+pydantic
+schedule
+
+# Monitoring & Logging
+loguru
+
+# Visualization & Reporting
+matplotlib
+seaborn
+
+# Application Layer
+streamlit
+requests
