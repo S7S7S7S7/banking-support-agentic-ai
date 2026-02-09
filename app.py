@@ -67,6 +67,9 @@ def generate_ai_reasoned_explanation(issue_type, analysis, root_cause, resolutio
 if uploaded_file:
     st.session_state["txn_df"] = pd.read_csv(uploaded_file)
     st.success("Transaction data uploaded successfully")
+    
+    st.subheader("🧪 Uploaded Transaction Data")
+    st.dataframe(st.session_state.get("txn_df"))
 
 user_issue = st.text_area("Describe the production issue")
 txn_id_input = st.text_input("Transaction ID")
@@ -124,8 +127,8 @@ if user_issue:
             if enhanced:
                 ai_explanation = enhanced
             
-        st.subheader("🧪 Uploaded Transaction Data")
-        st.dataframe(st.session_state.get("txn_df"))
+        # st.subheader("🧪 Uploaded Transaction Data")
+        # st.dataframe(st.session_state.get("txn_df"))
 
         st.subheader("🔍 Issue Type")
         st.write(issue_type)
