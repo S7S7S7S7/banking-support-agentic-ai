@@ -9,6 +9,8 @@ from root_cause_engine import analyze_root_cause
 from context_extractor import extract_context
 from llm_reasoner import llm_reason
 from planner_agent import plan_actions
+from priority_agent import assign_priority
+from log_analyzer import analyze_logs
 import os 
 
 USE_LLM = bool(os.getenv("OPENAI_API_KEY"))
@@ -28,11 +30,11 @@ st.title("🏦 Banking Production Support – AI Agent")
 st.write("Agentic AI for L1 / L2 / L3 Support")
 
 uploaded_file = st.file_uploader(
-    "Upload Transaction Data (CSV)",
-    type=["csv"]
+    "Upload Transaction Data",
+    type=["csv", "xlsx", "xls"]
 )
 
-def generate_ai_reasoned_explanation(issue_type, analysis, root_cause, resolution):
+def generate_ai_reasoned_explanation(issue_type, analysis, root_cause, resolution, priority):
     explanation = []
 
     explanation.append(
@@ -55,6 +57,11 @@ def generate_ai_reasoned_explanation(issue_type, analysis, root_cause, resolutio
             explanation.append(
                 f"The issue severity is assessed as {severity} and assigned to {owner} support."
             )
+    if priority:
+        explanation.append(
+            f"The issue has been assigned priority {priority['priority']} "
+            f"based on the business impact."
+        )
 
     if resolution:
         explanation.append(
@@ -65,14 +72,29 @@ def generate_ai_reasoned_explanation(issue_type, analysis, root_cause, resolutio
     return " ".join(explanation)
 
 if uploaded_file:
-    st.session_state["txn_df"] = pd.read_csv(uploaded_file)
-    st.success("Transaction data uploaded successfully")
-    
-    st.subheader("🧪 Uploaded Transaction Data")
-    st.dataframe(st.session_state.get("txn_df"))
+
+    file_type = uploaded_file.name.split(".")[-1]
+
+    if file_type == "csv":
+        df = pd.read_csv(uploaded_file)
+
+    elif file_type in ["xlsx", "xls"]:
+        df = pd.read_excel(uploaded_file)
+
+    else:
+        st.error("Unsupported file type")
+        df = None
+
+    if df is not None:
+        st.session_state["txn_df"] = df
+        st.success("Transaction data uploaded successfully")
+
+        st.subheader("🧪 Uploaded Transaction Data")
+        st.dataframe(df)
 
 user_issue = st.text_area("Describe the production issue")
 txn_id_input = st.text_input("Transaction ID")
+log_input = st.text_area("Paste Application Logs (Optional)")
 
 if user_issue:
     # 🔹 Update ticket memory first
@@ -101,24 +123,28 @@ if user_issue:
 
     else:
         analysis = None
+        log_analysis = None
 
         txn_id = st.session_state.ticket_context.get("txn_id")
 
         if txn_id:
-            analysis = analyze_transaction(issue_type,user_issue,txn_id,
-                        st.session_state.get("txn_df"))
+            analysis = analyze_transaction(issue_type,user_issue,txn_id,st.session_state.get("txn_df"))
+
         elif plan["run_transaction_analysis"]:
-            analysis = analyze_transaction(issue_type,user_issue,None,
-                            st.session_state.get("txn_df"))
+            analysis = analyze_transaction(issue_type,user_issue,None,st.session_state.get("txn_df"))
+
+        # Log analyzer runs independently
+        if log_input:
+            log_analysis = analyze_logs(issue_type, user_issue, log_input)
 
         sql_checks = suggest_sql(issue_type,st.session_state.ticket_context)
         # root_cause = analyze_root_cause(issue_type, user_issue)
-        root_cause = analyze_root_cause(issue_type, user_issue, analysis)
+        root_cause = analyze_root_cause(issue_type,user_issue,analysis,log_analysis)
+        priority = assign_priority(issue_type,root_cause,analysis,st.session_state.ticket_context)
         resolution = suggest_resolution(issue_type, root_cause, analysis)
 
         # 🤖 AI Reasoned Explanation (Rule-based default)
-        ai_explanation = generate_ai_reasoned_explanation(
-                         issue_type,analysis,root_cause,resolution)
+        ai_explanation = generate_ai_reasoned_explanation(issue_type,analysis,root_cause,resolution,priority)
 
         # Optional LLM enhancement (polish only)
         if USE_LLM:
@@ -138,6 +164,20 @@ if user_issue:
             st.write(analysis)
         else:
             st.warning("No analysis available yet.")
+        
+        st.subheader("📜 Log Analysis")
+
+        if log_analysis:
+            st.write(log_analysis.get("summary"))
+            errors = log_analysis.get("errors_found", [])
+            if errors:
+                st.write("Detected Issues:")
+                for err in errors:
+                    st.write(f"- {err}")
+            else:
+                st.write("No logs provided.")
+        else:
+            st.write("No logs provided.")
 
         st.subheader("🛠️ Resolution")
         for step in resolution:
@@ -153,10 +193,15 @@ if user_issue:
         st.write(f"Cause: {root_cause['cause']}")
         st.write(f"Severity: {root_cause['severity']}")
         st.write(f"Owner: {root_cause['owner']}")
+        
+        st.subheader("🚨 Ticket Priority")
+        st.write(f"Priority Level: {priority['priority']}")
+        st.write(f"Reason: {priority['reason']}")
 
         st.session_state.ticket_context["issue_type"] = issue_type
         st.session_state.ticket_context["severity"] = root_cause["severity"]
         st.session_state.ticket_context["owner"] = root_cause["owner"]
+        st.session_state.ticket_context["priority"] = priority["priority"]
 
         st.subheader("🗂️ Ticket Context (Session Memory)")
         st.json(st.session_state.ticket_context)
