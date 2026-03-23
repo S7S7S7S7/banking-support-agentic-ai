@@ -13,7 +13,11 @@ from priority_agent import assign_priority
 from log_analyzer import analyze_logs
 import os 
 
-USE_LLM = bool(os.getenv("OPENAI_API_KEY"))
+try:
+    os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
+    USE_LLM = True
+except:
+    USE_LLM = False
 
 if "ticket_context" not in st.session_state:
     st.session_state.ticket_context = {

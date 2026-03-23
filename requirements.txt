@@ -5,10 +5,10 @@ numpy
 
 # Database & Banking Systems
 sqlalchemy
-cx_Oracle
 psycopg2-binary
 
 # Agentic AI / Reasoning
+openai
 langchain
 transformers
 sentence-transformers
