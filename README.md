@@ -3,58 +3,78 @@
 ## 📌 Project Overview
 This project is a **Banking Production Support Agentic AI Application** designed to assist support teams in identifying, analyzing, and resolving production issues in real-time banking systems.
 
-The application simulates an **L2/L3 support environment** where incidents are analyzed using a combination of:
-- Rule-based logic
-- SQL diagnostics
-- AI-driven reasoning (Agentic AI)
+In this project, I designed and implemented an **Agentic AI system** capable of autonomously solving tasks using LLMs, tools, and memory.
 
-The goal is to reduce manual investigation time and improve resolution accuracy in enterprise banking platforms.
+### 🔹 Core Contributions
 
----
-
-## 🏦 Business Context
-In large-scale banking systems, production issues such as transaction failures, data inconsistencies, and performance bottlenecks require fast and accurate diagnosis.
-
-This application acts as an **intelligent support agent** that:
-- Analyzes incidents
-- Determines possible root causes
-- Suggests corrective SQL and operational actions
-- Falls back to manual investigation where required
+* Designed a **multi-agent workflow** where agents collaborate to complete complex tasks
+* Implemented **task decomposition**, allowing the system to break down user queries into smaller actionable steps
+* Integrated **LLM-based reasoning** to decide which tools/actions to use dynamically
+* Built custom **tooling functions** (APIs, data processing, or external calls) for agent execution
+* Developed **memory management** to retain context across multiple interactions
+* Enabled **autonomous decision-making**, where the agent selects next steps without hardcoded logic
 
 ---
 
-## 🎯 Objectives
-- Automate first-level issue analysis
-- Support L2/L3 engineers with intelligent insights
-- Perform Root Cause Analysis (RCA)
-- Generate SQL diagnostic suggestions
-- Improve system uptime and support efficiency
+### 🔹 Agent Workflow
+
+1. User input is received
+2. Agent analyzes intent using LLM
+3. Task is broken into smaller steps
+4. Relevant tools/functions are selected
+5. Agent executes actions step-by-step
+6. Memory stores context for continuity
+7. Final response is generated
 
 ---
 
-## 🧠 Agentic AI Capabilities
-- Autonomous reasoning based on incident patterns
-- Decision-making using rule-based and AI logic
-- Context-aware recommendations
-- Safe fallback mechanisms when AI confidence is low
+### 🔹 Key Functionalities
+
+* ✅ Intelligent task planning
+* ✅ Dynamic tool usage
+* ✅ Context-aware responses
+* ✅ Iterative reasoning (multi-step thinking)
+* ✅ Modular and scalable architecture
 
 ---
 
-## ⚙️ Key Features
-- Incident and transaction issue analysis
-- Root Cause Analysis engine
-- SQL query diagnostics and optimization suggestions
-- Rule-based fallback for critical banking flows
-- Interactive dashboard for support teams
-- Explainable reasoning for audit and compliance
+### 🔹 Example Scenario
+
+**Input:** "Analyze sales data and suggest improvements"
+
+**Agent Actions:**
+
+* Loads dataset
+* Performs data analysis
+* Identifies trends
+* Generates insights using LLM
+* Suggests actionable recommendations
 
 ---
 
-## 🛠️ Tech Stack
-- **Programming Language:** Python  
-- **Database:** Oracle / SQL  
-- **Agentic AI:** LangChain, Transformers  
-- **Data Processing:** Pandas, NumPy  
-- **Visualization:** Matplotlib, Seaborn  
-- **Framework:** Streamlit  
-- **Domain:** Banking Production Support  
+### 🔹 Technical Highlights
+
+* Implemented using **LangChain / LangGraph-based agent architecture**
+* Used **LLM APIs** for reasoning and decision-making
+* Integrated **Python-based tools** for execution
+* Designed modular components for scalability and reuse
+
+---
+
+### 🔹 What Makes This Project Unique
+
+Unlike traditional chatbots, this system:
+
+* Does not rely on predefined flows
+* Makes **autonomous decisions**
+* Uses **tools + reasoning + memory together**
+* Mimics real-world AI agent behavior
+
+---
+
+### 🔹 Learning Outcomes
+
+* Gained hands-on experience in building **Agentic AI systems**
+* Understood **LLM orchestration and tool integration**
+* Learned how to design **scalable AI workflows**
+* Explored real-world applications of **autonomous AI agents**
